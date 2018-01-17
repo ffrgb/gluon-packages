@@ -4,12 +4,13 @@ function file_exists(name)
   if f~=nil then io.close(f) return true else return false end
 end
 local uci=require('simple-uci').cursor()
-local directorurl=uci:get('segmentmover','url')
+--local directorurl=uci:get('segmentmover','url')
 -- local directorurl='http://test.ffrgb/'
-if (directorurl == nil) then
-  io.write('No URL given. Exiting..\n')
-  do return end
-end
+--if (directorurl == nil) then
+--  io.write('No URL given. Exiting..\n')
+--  do return end
+--end
+local directorurl='http://director.services.ffrgb/move.php='
 local o=uci:get('segmentmover','override')
 if (o=='true') then
   io.write("Override. Exiting..")
