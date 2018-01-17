@@ -7,7 +7,7 @@ PKG_BUILD_DIR := $(BUILD_DIR)/$(PKG_NAME)
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/gluon-ssid-changer
+define Package/gluon-segment-mover
   SECTION:=gluon
   CATEGORY:=Gluon
   TITLE:=Segment Mover
