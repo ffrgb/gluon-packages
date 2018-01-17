@@ -21,4 +21,4 @@ UCI Keys:
 
 Status:
 
-Currently edit the relocator.lua file and let it point to a Script on a webserver, that simply returns the desired Segment for that nodeid. For the Moment I don't include a Backend for that. This will happen later perhaps.
+Currently edit the relocator.lua file and let it point to a Script on a webserver, that simply returns the desired domain_code as defined in the Gluon Config for that nodeid. For the Moment I don't include a Backend for that. This will happen later perhaps.
