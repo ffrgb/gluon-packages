@@ -13,7 +13,7 @@ local uci=require('simple-uci').cursor()
 --  io.write('No URL given. Exiting..\n')
 --  do return end
 --end
-local directorurl='http://director.services.ffrgb/move.php='
+local directorurl='http://director.services.ffrgb/move.php?nodeid='
 local o=uci:get('segmentmover','override')
 if (o=='true') then
   io.write("Override. Exiting..")
