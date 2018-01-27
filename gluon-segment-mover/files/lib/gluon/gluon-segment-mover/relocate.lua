@@ -7,22 +7,23 @@ function file_exists(name)
   if f~=nil then io.close(f) return true else return false end
 end
 local uci=require('simple-uci').cursor()
-local directorurl='http://director.services.ffrgb/move.php?nodeid='
 local o=uci:get('segmentmover','override')
 if (o=='true') then
   io.write("Override. Exiting..")
   do return end
 end
-local o=uci:get("gluon","core","domain")
+local currentdomain=uci:get("gluon","core","domain")
 local nodeid = require('gluon.util').node_id()
-local newseg = io.popen("wget -q -O - " .. directorurl .. nodeid):read('*a')
-io.write('Current Segment: ' .. o .. '\nNodeID: ' .. nodeid .. '\nRequested Segment: ' .. newseg ..'\n')
-if (o==newseg or newseg == "") then
+local directorurl='http://director.services.ffrgb/move.php?nodeid=' .. nodeid .. '&currentdomain=' .. currentdomain
+io.write(directorurl)
+local newseg = io.popen("wget -q -O - '" .. directorurl .. "'"):read('*a')
+io.write('Current Segment: ' .. currentdomain .. '\nNodeID: ' .. nodeid .. '\nRequested Segment: ' .. newseg ..'\n')
+if (o==newseg or newseg == "" or newseg == "noop") then
   io.write("Do nothing..\n")
 else
   if (file_exists('/lib/gluon/domains/' .. newseg .. '.json') == true) then
     os.execute('logger -s -t "gluon-segment-mover" -p 5 "Segment Change requested. Moving to "' .. newseg)
-    uci:set('gluon','system','domain_code',newseg)
+--    uci:set('gluon','system','domain_code',newseg)
     uci:save('gluon')
     uci:commit('gluon')
     io.write("Change\n")
