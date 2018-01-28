@@ -17,7 +17,7 @@ local nodeid = require('gluon.util').node_id()
 local directorurl='http://director.services.ffrgb/move.php?nodeid=' .. nodeid .. '&currentdomain=' .. currentdomain
 local newseg = io.popen("wget -q -O - '" .. directorurl .. "'"):read('*a')
 io.write('Current Segment: ' .. currentdomain .. '\nNodeID: ' .. nodeid .. '\nRequested Segment: ' .. newseg ..'\n')
-if (o==newseg or newseg == "" or newseg == "noop") then
+if (currentdomain==newseg or newseg == "" or newseg == "noop") then
   io.write("Do nothing..\n")
 else
   if (file_exists('/lib/gluon/domains/' .. newseg .. '.json') == true) then
