@@ -22,7 +22,7 @@ if (o==newseg or newseg == "" or newseg == "noop") then
 else
   if (file_exists('/lib/gluon/domains/' .. newseg .. '.json') == true) then
     os.execute('logger -s -t "gluon-segment-mover" -p 5 "Segment Change requested. Moving to "' .. newseg)
-    uci:set('gluon','system','domain_code',newseg)
+    uci:set('gluon','core','domain',newseg)
     uci:save('gluon')
     uci:commit('gluon')
     io.write("Change\n")
