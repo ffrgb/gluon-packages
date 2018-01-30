@@ -1,0 +1,14 @@
+#!/bin/sh
+
+gw=`batctl gwl|grep "\*"|cut -d" " -f 2`
+via=`batctl gwl|grep "\*"|cut -d" " -f 4`
+
+echo    ".-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-."
+echo -n "| WAN enable....: "; uci show|grep network\.wan\.auto|cut -d= -f2
+echo -n "| WAN IPv4......: "; ifconfig br-wan|grep "inet\ "|cut -d: -f 2|cut -d" " -f 1
+echo -n "| WAN IPv6......: "; ifconfig br-wan|grep inet6|grep Global|sed ':a;N;$!ba;s/\n//g'|sed 's/ \{1,\}/ /g'|sed 's/inet6 addr: / /g'|sed -e 's/^[[:space:]]*//'
+echo -n "! Mesh IPv6.....: "; ifconfig br-client|grep inet6|grep Global|sed ':a;N;$!ba;s/\n//g'|sed 's/ \{1,\}/ /g'|sed 's/inet6 addr: / /g'|sed -e 's/^[[:space:]]*//'
+echo    ": Mesh Gateway..: $gw via $via";
+echo -n ": Mesh VPN......: "; uci show|grep fastd.mesh_vpn.enabled|cut -d= -f 2
+echo -n ". FFRGB Domain..: "; uci show|grep gluon.core.domain|cut -d= -f 2
+echo " "
