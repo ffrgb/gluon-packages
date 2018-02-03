@@ -32,25 +32,37 @@ endef
 define Package/ffrgb-banner/preinst
 #!/bin/sh
 cd "$${IPKG_INSTROOT}/etc/"
+#preserve stock banner
 if [ -h "./banner" ] ; then
 	/bin/rm "./banner"
 elif [ -f "./banner" ] ; then
 	/bin/mv "./banner" "./banner.openwrt"
 fi
 /bin/ln -s "./banner.openwrt" "./banner"
+#preserve stock profile
+if [ -h "./profile" ] ; then
+	/bin/rm "./profile"
+elif [ -f "./profile" ] ; then
+	/bin/mv "./profile" "./profile.openwrt"
+fi
+/bin/ln -s "./profile.openwrt" "./profile"
 exit 0
 endef
 
 define Package/ffrgb-banner/postinst
 #!/bin/sh
+#set links
 cd "$${IPKG_INSTROOT}/etc/"
 [ -h "./banner" ] && /bin/rm -f "./banner"
 /bin/ln -s "./banner.ffrgb" "./banner"
+[ -h "./profile" ] && /bin/rm -f "./profile"
+/bin/ln -s "./profile.ffrgb" "./profile"
 exit $$?
 endef
 
 define Package/ffrgb-banner/prerm
 #!/bin/sh
+#restore stock banner
 cd "$${IPKG_INSTROOT}/etc/"
 if [ -h "./banner" ] ; then
 	[[ "$$(readlink -n ./banner)" == "./banner.ffrgb" ]] && \
@@ -58,12 +70,21 @@ if [ -h "./banner" ] ; then
 	[ -f "./banner.openwrt" ] && \
 	/bin/ln -s "./banner.openwrt" "./banner"
 fi
+#restore stock profile
+if [ -h "./profile" ] ; then
+	[[ "$$(readlink -n ./banner)" == "./prpfile.ffrgb" ]] && \
+	/bin/rm -f "./profile" && \
+	[ -f "./profile.openwrt" ] && \
+	/bin/ln -s "./profile.openwrt" "./profile"
+fi
 exit 0
 endef
 
 define Package/ffrgb-banner/install
 	$(INSTALL_DIR) $(1)/etc/
 	$(INSTALL_DATA) ./files/etc/banner.ffrgb $(1)/etc/
+	$(INSTALL_DATA) ./files/etc/profile.ffrgb $(1)/etc/
+	$(INSTALL_DATA) ./usr/bin/nodeinfo $(1)/usr/bin/
 endef
 
 $(eval $(call BuildPackage,ffrgb-banner))
