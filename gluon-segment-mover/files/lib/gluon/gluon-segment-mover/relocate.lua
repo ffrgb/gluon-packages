@@ -8,6 +8,10 @@ function file_exists(name)
   local f=io.open(name,"r")
   if f~=nil then io.close(f) return true else return false end
 end
+if (file_exists('/var/lock/autoupdater.lock')) then
+  io.write("Autoupdater is running.\n")
+  do return end
+end
 local uci=require('simple-uci').cursor()
 local o=uci:get('gluon','core','ignorerelocate')
 if (o=='1') then
