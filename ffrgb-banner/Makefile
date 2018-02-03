@@ -84,6 +84,7 @@ define Package/ffrgb-banner/install
 	$(INSTALL_DIR) $(1)/etc/
 	$(INSTALL_DATA) ./files/etc/banner.ffrgb $(1)/etc/
 	$(INSTALL_DATA) ./files/etc/profile.ffrgb $(1)/etc/
+	$(INSTALL_DIR) $(1)/usr/bin/
 	$(INSTALL_DATA) ./usr/bin/nodeinfo $(1)/usr/bin/
 endef
 
