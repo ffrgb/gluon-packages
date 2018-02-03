@@ -72,7 +72,7 @@ if [ -h "./banner" ] ; then
 fi
 #restore stock profile
 if [ -h "./profile" ] ; then
-	[[ "$$(readlink -n ./banner)" == "./prpfile.ffrgb" ]] && \
+	[[ "$$(readlink -n ./profile)" == "./profile.ffrgb" ]] && \
 	/bin/rm -f "./profile" && \
 	[ -f "./profile.openwrt" ] && \
 	/bin/ln -s "./profile.openwrt" "./profile"
