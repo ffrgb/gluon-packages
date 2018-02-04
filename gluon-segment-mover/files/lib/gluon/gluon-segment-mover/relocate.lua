@@ -1,16 +1,14 @@
 #!/usr/bin/lua
 local devurandom = io.open("/dev/urandom","rb")
 local b1,b2 = devurandom:read(2):byte(1,2)
+local autoupdaterlockfile='/var/lock/autoupdater.lock'
+local directorurl='http://director.services.ffrgb/move.php?nodeid='
 seed = b1 + (256 * b2)
 math.randomseed(seed)
 local delay = math.random(60)
 function file_exists(name)
   local f=io.open(name,"r")
   if f~=nil then io.close(f) return true else return false end
-end
-if (file_exists('/var/lock/autoupdater.lock')) then
-  io.write("Autoupdater is running.\n")
-  do return end
 end
 local uci=require('simple-uci').cursor()
 local o=uci:get('gluon','core','ignorerelocate')
@@ -22,13 +20,19 @@ io.write('Sleeping for ' .. delay .. ' Seconds.\n')
 os.execute('sleep ' .. delay)
 local currentdomain=uci:get("gluon","core","domain")
 local nodeid = require('gluon.util').node_id()
-local directorurl='http://director.services.ffrgb/move.php?nodeid=' .. nodeid .. '&currentdomain=' .. currentdomain
-local newseg = io.popen("wget -q -O - '" .. directorurl .. "'"):read('*a')
+local url=directorurl .. nodeid .. '&currentdomain=' .. currentdomain
+local newseg = io.popen("wget -q -O - '" .. url .. "'"):read('*a')
 io.write('Current Domain: ' .. currentdomain .. '\nNodeID: ' .. nodeid .. '\nRequested Domain: ' .. newseg ..'\n')
 if (currentdomain==newseg or newseg == "" or newseg == "noop") then
   io.write("Do nothing..\n")
 else
   if (file_exists('/lib/gluon/domains/' .. newseg .. '.json') == true) then
+    -- This is not nice, but it works. nixio lacks flock...
+    local alock = io.popen('lock -n ' .. autoupdaterlockfile .. ' 2>/dev/null && echo unlocked || echo locked'):read('*l')
+    if (alock ~= 'unlocked') then
+      io.write('Detected Flock on ' .. autoupdaterlockfile .. '. Exiting.\n')
+      do return end
+    end
     os.execute('logger -s -t "gluon-segment-mover" -p 5 "Domain Change requested. Moving to "' .. newseg)
     uci:set('gluon','core','domain',newseg)
     uci:save('gluon')
@@ -46,7 +50,8 @@ else
       uci:commit ('network')
     end
     os.execute('/usr/bin/gluon-reconfigure')
-    io.popen("reboot")
+    io.popen('lock -u ' .. autoupdaterlockfile)
+    io.popen('reboot')
   else
     io.write('Invalid Domain requested. I don\'t have ' .. newseg .. '.conf')
     do return end
