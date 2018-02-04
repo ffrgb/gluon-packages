@@ -32,14 +32,12 @@ endef
 define Package/ffrgb-banner/preinst
 #!/bin/sh
 cd "$${IPKG_INSTROOT}/etc/"
-#preserve stock banner
 if [ -h "./banner" ] ; then
 	/bin/rm "./banner"
 elif [ -f "./banner" ] ; then
 	/bin/mv "./banner" "./banner.openwrt"
 fi
 /bin/ln -s "./banner.openwrt" "./banner"
-#preserve stock profile
 if [ -h "./profile" ] ; then
 	/bin/rm "./profile"
 elif [ -f "./profile" ] ; then
@@ -51,7 +49,6 @@ endef
 
 define Package/ffrgb-banner/postinst
 #!/bin/sh
-#set links
 cd "$${IPKG_INSTROOT}/etc/"
 [ -h "./banner" ] && /bin/rm -f "./banner"
 /bin/ln -s "./banner.ffrgb" "./banner"
@@ -62,7 +59,6 @@ endef
 
 define Package/ffrgb-banner/prerm
 #!/bin/sh
-#restore stock banner
 cd "$${IPKG_INSTROOT}/etc/"
 if [ -h "./banner" ] ; then
 	[[ "$$(readlink -n ./banner)" == "./banner.ffrgb" ]] && \
@@ -70,7 +66,6 @@ if [ -h "./banner" ] ; then
 	[ -f "./banner.openwrt" ] && \
 	/bin/ln -s "./banner.openwrt" "./banner"
 fi
-#restore stock profile
 if [ -h "./profile" ] ; then
 	[[ "$$(readlink -n ./profile)" == "./profile.ffrgb" ]] && \
 	/bin/rm -f "./profile" && \
